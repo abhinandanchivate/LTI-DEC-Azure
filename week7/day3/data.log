@@ -1,0 +1,18 @@
+[2025-12-31 10:15:23] ERROR: Connection timeout - Database: db-prod-01
+[2025-12-31 10:15:23] STACK TRACE:
+  at DatabaseConnector.connect() line 145
+  at Application.start() line 67
+[2025-12-31 10:15:30] ERROR: Failed to authenticate user - UserID: user12345
+[2025-12-31 10:15:30] DETAILS: Invalid credentials provided
+[2025-12-31 10:16:45] CRITICAL: Disk space low - Available: 2.3GB (5%)
+[2025-12-31 10:16:45] ACTION REQUIRED: Clean up old logs or increase storage
+[2025-12-31 10:18:12] ERROR: API call failed - Endpoint: /api/v1/data
+[2025-12-31 10:18:12] HTTP STATUS: 503 Service Unavailable
+[2025-12-31 10:18:12] RETRY: Attempt 1 of 3
+[2025-12-31 10:18:15] ERROR: API call failed - Endpoint: /api/v1/data
+[2025-12-31 10:18:15] RETRY: Attempt 2 of 3
+[2025-12-31 10:18:18] SUCCESS: API call succeeded on retry
+[2025-12-31 10:20:00] ERROR: Memory leak detected - Process: worker-03
+[2025-12-31 10:20:00] MEMORY USAGE: 4.2GB / 4GB (105%)
+[2025-12-31 10:20:01] ACTION: Restarting worker-03
+[2025-12-31 10:20:05] INFO: worker-03 restarted successfully
