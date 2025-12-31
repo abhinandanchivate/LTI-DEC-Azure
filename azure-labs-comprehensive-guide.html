@@ -1,0 +1,3347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Comprehensive Azure Storage, VM, and Networking Labs - Step-by-Step Guide with Azure CLI">
+    <meta name="author" content="Azure Training Lab">
+    <meta name="keywords" content="Azure, Azure CLI, Storage Accounts, Virtual Machines, Virtual Networks, Cloud Computing, Labs">
+    <title>Azure Comprehensive Labs Guide | Storage, VMs & Networking</title>
+    <style>
+        :root {
+            --primary-color: #0078d4;
+            --secondary-color: #106ebe;
+            --success-color: #107c10;
+            --warning-color: #ff8c00;
+            --danger-color: #d13438;
+            --dark-bg: #1e1e1e;
+            --light-bg: #f5f5f5;
+            --code-bg: #2d2d2d;
+            --border-color: #e0e0e0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: #fff;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background-color: var(--light-bg);
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 120px;
+            z-index: 999;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        .nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-left-color: var(--primary-color);
+            color: #01579b;
+        }
+
+        .alert-warning {
+            background-color: #fff3e0;
+            border-left-color: var(--warning-color);
+            color: #e65100;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            border-left-color: var(--success-color);
+            color: #1b5e20;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            border-left-color: var(--danger-color);
+            color: #b71c1c;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Section Styles */
+        .section {
+            margin: 3rem 0;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .section h3 {
+            color: var(--secondary-color);
+            margin: 2rem 0 1rem;
+            font-size: 1.4rem;
+        }
+
+        .section h4 {
+            color: var(--text-primary);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Code Blocks */
+        .code-block-container {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .code-block-header {
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.9rem;
+        }
+
+        .code-block-header .language {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background-color: var(--success-color);
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 0 0 6px 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        /* Inline Code */
+        .section p code,
+        .section li code {
+            background-color: #f0f0f0;
+            color: var(--danger-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Task Labels */
+        .task-label {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Step Labels */
+        .step-label {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 1rem 0 0.5rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        /* Expected Output */
+        .expected-output {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .expected-output strong {
+            color: var(--success-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Prerequisites Box */
+        .prerequisites {
+            background-color: #fff3e0;
+            border: 2px solid var(--warning-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 6px;
+        }
+
+        .prerequisites h4 {
+            color: var(--warning-color);
+            margin-top: 0;
+        }
+
+        /* Scenario Box */
+        .scenario {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        .scenario strong {
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .scroll-top:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-5px);
+        }
+
+        .scroll-top.visible {
+            display: flex;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .nav {
+                padding: 0.5rem 1rem;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+
+            .code-block-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header,
+            .nav-container,
+            .copy-btn,
+            .scroll-top,
+            .footer {
+                display: none;
+            }
+
+            .section {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+
+            pre {
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>🚀 Azure Comprehensive Labs Guide</h1>
+            <p>Step-by-Step Guided Labs for Storage Accounts, Virtual Machines & Virtual Networks</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">📅 Updated: December 2025 | Azure CLI 2.81.0</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav">
+            <a href="#important-notes">⚠️ Important Notes</a>
+            <a href="#lab1">Lab 1: Storage Accounts</a>
+            <a href="#lab2">Lab 2: Blob Storage</a>
+            <a href="#lab3">Lab 3: Access Tiers</a>
+            <a href="#lab4">Lab 4: ADLS Gen2</a>
+            <a href="#lab5">Lab 5: VMs</a>
+            <a href="#lab6">Lab 6: VM Lifecycle</a>
+            <a href="#lab7">Lab 7: VM Availability</a>
+            <a href="#lab8">Lab 8: VM Monitoring</a>
+            <a href="#lab9">Lab 9: VNets</a>
+            <a href="#lab10">Lab 10: NSG & ASG</a>
+            <a href="#lab11">Lab 11: VPN Gateway</a>
+            <a href="#lab12">Lab 12: Troubleshooting</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Important Notes Section -->
+        <section id="important-notes" class="section">
+            <h2>⚠️ Important Notes - December 2025 Updates</h2>
+            
+            <div class="alert alert-warning">
+                <strong>🔴 Critical Service Retirements & Changes</strong>
+                <ul>
+                    <li><strong>NSG Flow Logs Retirement:</strong> Network Security Group (NSG) flow logs will be retired on <strong>September 30, 2027</strong>. After June 30, 2025, you cannot create new NSG flow logs. Microsoft recommends migrating to Virtual Network flow logs.</li>
+                    <li><strong>VM Series Retirements:</strong> NCv3-series VMs (Standard_NC6s_v3, Standard_NC12s_v3, Standard_NC24s_v3, Standard_NC24rs_v3) will retire on <strong>September 30, 2025</strong>. Migrate to NCadsH100_v5-series or other recommended SKUs.</li>
+                    <li><strong>ADLS Gen1 Retired:</strong> Azure Data Lake Storage Gen1 was retired on February 29, 2024. All labs use ADLS Gen2.</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>✅ Latest Features & Capabilities</strong>
+                <ul>
+                    <li><strong>Azure CLI Version:</strong> All commands tested with Azure CLI <strong>2.81.0</strong> (December 2, 2025)</li>
+                    <li><strong>Windows Server 2025:</strong> Now generally available and supported on Azure VMs</li>
+                    <li><strong>Ubuntu 22.04 LTS:</strong> Fully supported and recommended for Linux VMs</li>
+                    <li><strong>MFA Requirement:</strong> Starting September 2025, Microsoft requires multi-factor authentication (MFA) for Azure CLI. Use service principals or managed identities for automation.</li>
+                    <li><strong>Standard V2 SKUs:</strong> NAT Gateway, Public IP, and Public IP Prefix now support Standard V2 SKU</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>📋 Prerequisites Checklist</strong>
+                <ul>
+                    <li>✅ Active Azure subscription</li>
+                    <li>✅ Azure CLI 2.81.0 or later installed</li>
+                    <li>✅ PowerShell (for Windows users) or Bash (for Linux/Mac users)</li>
+                    <li>✅ Basic understanding of cloud computing concepts</li>
+                    <li>✅ SSH client installed (for VM access)</li>
+                    <li>✅ Contributor or Owner role on Azure subscription</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>💰 Cost Management Warning</strong>
+                <p>These labs create billable Azure resources. Remember to:</p>
+                <ul>
+                    <li>Delete resource groups after completing labs: <code>az group delete --name rg-storage-lab --yes --no-wait</code></li>
+                    <li>Stop/deallocate VMs when not in use: <code>az vm deallocate -g &lt;rg&gt; -n &lt;vm-name&gt;</code></li>
+                    <li>Monitor costs in Azure Cost Management + Billing</li>
+                    <li>Use Azure Pricing Calculator to estimate costs: <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank">https://azure.microsoft.com/pricing/calculator/</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Lab 1: Storage Accounts -->
+        <section id="lab1" class="section">
+            <h2>Lab 1: Create Storage Account with Different Redundancy Models</h2>
+            
+            <div class="scenario">
+                <strong>📖 Scenario:</strong> Create storage accounts for a production application with different redundancy needs
+            </div>
+
+            <div class="prerequisites">
+                <h4>Prerequisites:</h4>
+                <ul>
+                    <li>Azure subscription</li>
+                    <li>Resource group created (we'll name it <code>rg-storage-lab</code>)</li>
+                </ul>
+            </div>
+
+            <h3>Task 1.1: Create LRS Storage Account (Azure Portal)</h3>
+            
+            <p class="step-label">Step 1: Navigate to Azure Portal</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Go to portal.azure.com
+2. Click "Create a resource"
+3. Search for "Storage account"
+4. Click "Create"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Configure Basic Settings</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Subscription: [Your subscription]
+Resource Group: rg-storage-lab (create new if doesn't exist)
+Storage account name: stlabprodlrs01 (must be globally unique, 3-24 lowercase letters/numbers)
+Region: East US
+Performance: Standard
+Redundancy: Locally-redundant storage (LRS)</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Configure Advanced Settings</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>- Security: Enable "Require secure transfer for REST API operations" ✓
+- Enable blob public access: Disabled (security best practice)
+- Enable storage account key access: Enabled
+- Default to Azure AD authorization: Enabled
+- Minimum TLS version: Version 1.2
+- Enable hierarchical namespace: Unchecked (for standard blob)</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Configure Networking</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Network access: Enable public access from all networks (for lab; restrict in production)</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Review and Create</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Click "Review + Create"
+Verify settings
+Click "Create"
+Wait 1-2 minutes for deployment</code></pre>
+            </div>
+
+            <h3>Task 1.2: Create ZRS Storage Account (Azure CLI)</h3>
+            
+            <p class="step-label">Step 1: Open Azure Cloud Shell (Bash)</p>
+            
+            <p class="step-label">Step 2: Set variables</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>RESOURCE_GROUP="rg-storage-lab"
+LOCATION="eastus"
+STORAGE_ACCOUNT_ZRS="stlabprodzrs01"</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create ZRS storage account</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account create \
+  --name $STORAGE_ACCOUNT_ZRS \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --sku Standard_ZRS \
+  --kind StorageV2 \
+  --access-tier Hot \
+  --https-only true \
+  --min-tls-version TLS1_2 \
+  --allow-blob-public-access false</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Verify creation</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account show \
+  --name $STORAGE_ACCOUNT_ZRS \
+  --resource-group $RESOURCE_GROUP \
+  --query '{name:name, sku:sku.name, location:location}' \
+  --output table</code></pre>
+            </div>
+
+            <div class="expected-output">
+                <strong>Expected Output:</strong>
+                <pre><code>Name              Sku           Location
+----------------  ------------  ----------
+stlabprodzrs01    Standard_ZRS  eastus</code></pre>
+            </div>
+
+            <h3>Task 1.3: Create GRS Storage Account with PowerShell</h3>
+            
+            <p class="step-label">Step 1: Open Azure Cloud Shell (PowerShell)</p>
+            
+            <p class="step-label">Step 2: Create GRS storage account</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">PowerShell</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>$resourceGroup = "rg-storage-lab"
+$location = "EastUS"
+$storageAccountGRS = "stlabprodgrs01"
+
+New-AzStorageAccount `
+  -ResourceGroupName $resourceGroup `
+  -Name $storageAccountGRS `
+  -Location $location `
+  -SkuName Standard_GRS `
+  -Kind StorageV2 `
+  -AccessTier Hot `
+  -EnableHttpsTrafficOnly $true `
+  -MinimumTlsVersion TLS1_2 `
+  -AllowBlobPublicAccess $false</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Check replication status</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">PowerShell</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Get-AzStorageAccount `
+  -ResourceGroupName $resourceGroup `
+  -Name $storageAccountGRS | 
+  Select-Object StorageAccountName, Sku, Location, SecondaryLocation</code></pre>
+            </div>
+
+            <h3>Task 1.4: Verify Redundancy Configuration</h3>
+            
+            <p class="step-label">Via Portal:</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Navigate to Storage Account → stlabprodgrs01
+2. Left menu → Data management → Redundancy
+3. Observe:
+   - Primary location: East US
+   - Secondary location: West US
+   - Last sync time: [timestamp]</code></pre>
+            </div>
+
+            <p class="step-label">Via CLI:</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account show \
+  --name stlabprodgrs01 \
+  --resource-group rg-storage-lab \
+  --query '{primary:primaryLocation, secondary:secondaryLocation, lastGeoFailoverTime:geoReplicationStats.lastSyncTime}' \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 2: Blob Storage -->
+        <section id="lab2" class="section">
+            <h2>Lab 2: Working with Blob Storage - Containers and Blob Types</h2>
+
+            <h3>Task 2.1: Create Containers and Upload Different Blob Types</h3>
+            
+            <p class="step-label">Step 1: Get storage account key</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>STORAGE_ACCOUNT="stlabprodlrs01"
+RESOURCE_GROUP="rg-storage-lab"
+
+ACCOUNT_KEY=$(az storage account keys list \
+  --resource-group $RESOURCE_GROUP \
+  --account-name $STORAGE_ACCOUNT \
+  --query '[0].value' \
+  --output tsv)
+
+echo $ACCOUNT_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create containers for different blob types</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Container for block blobs (documents, images)
+az storage container create \
+  --name documents \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --public-access off
+
+# Container for append blobs (logs)
+az storage container create \
+  --name logs \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --public-access off
+
+# Container for page blobs (VHD disks)
+az storage container create \
+  --name vhds \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --public-access off</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Upload a block blob</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create a sample file
+echo "This is a sample document for testing" > sample-document.txt
+
+# Upload as block blob
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name sample-document.txt \
+  --file sample-document.txt \
+  --type block
+
+# Upload with metadata
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name company-report.txt \
+  --file sample-document.txt \
+  --metadata department=finance year=2025 \
+  --type block</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create and work with append blob (logs)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create an append blob
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name logs \
+  --name application-log.txt \
+  --file sample-document.txt \
+  --type append
+
+# Append more content (simulating log entries)
+echo "2025-01-15 10:30:00 - Application started" > log-entry1.txt
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name logs \
+  --name application-log.txt \
+  --file log-entry1.txt \
+  --type append \
+  --overwrite false
+
+# Append another entry
+echo "2025-01-15 10:31:00 - User logged in" > log-entry2.txt
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name logs \
+  --name application-log.txt \
+  --file log-entry2.txt \
+  --type append \
+  --overwrite false</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Verify blob properties</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage blob show \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name sample-document.txt \
+  --query '{name:name, blobType:properties.blobType, contentLength:properties.contentLength, lastModified:properties.lastModified}' \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 3: Access Tiers -->
+        <section id="lab3" class="section">
+            <h2>Lab 3: Configure Access Tiers and Lifecycle Management</h2>
+
+            <h3>Task 3.1: Set Blob Access Tiers</h3>
+            
+            <p class="step-label">Step 1: Upload blobs with different access tiers</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create sample files
+echo "Recent video - high demand" > recent-video.mp4
+echo "Old video - low demand" > old-video.mp4
+
+# Upload to Hot tier (default)
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name recent-video.mp4 \
+  --file recent-video.mp4 \
+  --tier Hot
+
+# Upload to Cool tier
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name old-video.mp4 \
+  --file old-video.mp4 \
+  --tier Cool</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Change blob tier (Hot → Cool)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage blob set-tier \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name sample-document.txt \
+  --tier Cool</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Verify tier changes</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage blob show \
+  --account-name $STORAGE_ACCOUNT \
+  --account-key $ACCOUNT_KEY \
+  --container-name documents \
+  --name sample-document.txt \
+  --query '{name:name, tier:properties.blobTier, accessTierChangeTime:properties.accessTierChangeTime}' \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 3.2: Configure Lifecycle Management Policy</h3>
+            
+            <p class="step-label">Step 1: Create lifecycle policy JSON file</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>cat > lifecycle-policy.json << 'EOF'
+{
+  "rules": [
+    {
+      "enabled": true,
+      "name": "move-to-cool-after-30-days",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "tierToCool": {
+              "daysAfterModificationGreaterThan": 30
+            },
+            "tierToArchive": {
+              "daysAfterModificationGreaterThan": 90
+            },
+            "delete": {
+              "daysAfterModificationGreaterThan": 365
+            }
+          },
+          "snapshot": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 90
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "documents/"
+          ]
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "name": "delete-old-logs",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterModificationGreaterThan": 7
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "appendBlob"
+          ],
+          "prefixMatch": [
+            "logs/"
+          ]
+        }
+      }
+    }
+  ]
+}
+EOF</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Apply lifecycle policy</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account management-policy create \
+  --account-name $STORAGE_ACCOUNT \
+  --resource-group $RESOURCE_GROUP \
+  --policy @lifecycle-policy.json</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Verify policy</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account management-policy show \
+  --account-name $STORAGE_ACCOUNT \
+  --resource-group $RESOURCE_GROUP \
+  --output table</code></pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Via Portal (to see detailed rules):</strong>
+                <ol>
+                    <li>Go to Storage Account → stlabprodlrs01</li>
+                    <li>Left menu → Data management → Lifecycle management</li>
+                    <li>View configured rules:
+                        <ul>
+                            <li>move-to-cool-after-30-days</li>
+                            <li>delete-old-logs</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Lab 4: ADLS Gen2 -->
+        <section id="lab4" class="section">
+            <h2>Lab 4: Configure ADLS Gen2 with Hierarchical Namespace</h2>
+
+            <h3>Task 4.1: Create ADLS Gen2 Storage Account</h3>
+            
+            <p class="step-label">Step 1: Create storage account with hierarchical namespace</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>STORAGE_ACCOUNT_ADLS="stlabdatalake01"
+
+az storage account create \
+  --name $STORAGE_ACCOUNT_ADLS \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --sku Standard_LRS \
+  --kind StorageV2 \
+  --hierarchical-namespace true \
+  --access-tier Hot</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Verify hierarchical namespace is enabled</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage account show \
+  --name $STORAGE_ACCOUNT_ADLS \
+  --resource-group $RESOURCE_GROUP \
+  --query '{name:name, isHnsEnabled:isHnsEnabled}' \
+  --output table</code></pre>
+            </div>
+
+            <div class="expected-output">
+                <strong>Expected Output:</strong>
+                <pre><code>Name                IsHnsEnabled
+------------------  --------------
+stlabdatalake01     True</code></pre>
+            </div>
+
+            <h3>Task 4.2: Create Directory Structure</h3>
+            
+            <p class="step-label">Step 1: Get account key for ADLS Gen2</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>ADLS_KEY=$(az storage account keys list \
+  --resource-group $RESOURCE_GROUP \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --query '[0].value' \
+  --output tsv)</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create filesystem (container)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage fs create \
+  --name rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create hierarchical directory structure</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create departments directory
+az storage fs directory create \
+  --name departments \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY
+
+# Create subdirectories
+az storage fs directory create \
+  --name departments/sales \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY
+
+az storage fs directory create \
+  --name departments/sales/2025 \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY
+
+az storage fs directory create \
+  --name departments/sales/2025/Q1 \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY
+
+az storage fs directory create \
+  --name departments/finance \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Upload files to directories</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create sample data file
+echo "date,product,amount" > sales-data.csv
+echo "2025-01-15,Product A,1000" >> sales-data.csv
+echo "2025-01-16,Product B,1500" >> sales-data.csv
+
+# Upload to specific directory
+az storage fs file upload \
+  --path departments/sales/2025/Q1/sales-data.csv \
+  --file-system rawdata \
+  --source sales-data.csv \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: List directory contents</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage fs file list \
+  --file-system rawdata \
+  --path departments/sales/2025/Q1 \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 4.3: Configure ACLs (Access Control Lists)</h3>
+            
+            <p class="step-label">Step 1: Get your Azure AD user Object ID</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>USER_OBJECT_ID=$(az ad signed-in-user show --query id --output tsv)
+echo "Your Object ID: $USER_OBJECT_ID"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Set ACL on directory (giving user read/write/execute)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage fs access set \
+  --acl "user::rwx,user:$USER_OBJECT_ID:rwx,group::r-x,other::---" \
+  --path departments/sales \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: View ACLs</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage fs access show \
+  --path departments/sales \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Set default ACLs (inherited by new files/folders)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az storage fs access set \
+  --acl "default:user::rwx,default:user:$USER_OBJECT_ID:r-x,default:group::r-x,default:other::---" \
+  --path departments/sales \
+  --file-system rawdata \
+  --account-name $STORAGE_ACCOUNT_ADLS \
+  --account-key $ADLS_KEY</code></pre>
+            </div>
+
+            <h3>Task 4.4: Configure RBAC</h3>
+            
+            <p class="step-label">Step 1: Assign Storage Blob Data Contributor role to yourself (via Portal)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Navigate to Storage Account → stlabdatalake01
+2. Left menu → Access Control (IAM)
+3. Click "+ Add" → "Add role assignment"
+4. Role tab:
+   - Select "Storage Blob Data Contributor"
+   - Click "Next"
+5. Members tab:
+   - Select "User, group, or service principal"
+   - Click "+ Select members"
+   - Search for your user account
+   - Click "Select"
+6. Click "Review + assign"</code></pre>
+            </div>
+
+            <p class="step-label">Via CLI:</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Get subscription ID
+SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+
+# Assign role
+az role assignment create \
+  --assignee $USER_OBJECT_ID \
+  --role "Storage Blob Data Contributor" \
+  --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_ADLS"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Verify role assignment</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az role assignment list \
+  --assignee $USER_OBJECT_ID \
+  --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_ADLS" \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 5: VMs -->
+        <section id="lab5" class="section">
+            <h2>Lab 5: Create and Configure Azure VMs</h2>
+
+            <h3>Task 5.1: Create a Basic Web Server VM (Azure Portal)</h3>
+            
+            <p class="step-label">Step 1: Navigate to Virtual Machines</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → "Create a resource"
+2. Select "Virtual machine"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Configure Basics tab</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Subscription: [Your subscription]
+Resource group: rg-vm-lab (create new)
+Virtual machine name: vm-webserver-01
+Region: East US
+Availability options: No infrastructure redundancy required
+Security type: Standard
+Image: Ubuntu Server 22.04 LTS - x64 Gen2
+VM architecture: x64
+Size: Standard_B2s (2 vcpus, 4 GiB memory) - click "See all sizes" to choose
+    
+Authentication:
+- Type: SSH public key
+- Username: azureuser
+- SSH public key source: Generate new key pair
+- Key pair name: vm-webserver-01_key</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Configure Disks tab</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>OS disk:
+- OS disk type: Premium SSD (locally-redundant storage)
+- Delete with VM: Yes (checked)
+- Encryption type: (Default) Encryption at-rest with platform-managed key
+
+Data disks:
+- Click "Create and attach a new disk"
+  - Name: vm-webserver-01_DataDisk_0
+  - Size: 128 GiB Premium SSD
+  - Click "OK"</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Configure Networking tab</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Virtual network: (Create new) vnet-webapp
+    Address space: 10.0.0.0/16
+    
+Subnet: (Create new) subnet-web
+    Subnet address range: 10.0.1.0/24
+    
+Public IP: (Create new) vm-webserver-01-ip
+    SKU: Standard
+    Assignment: Static
+    
+NIC network security group: Basic
+Select inbound ports: SSH (22), HTTP (80), HTTPS (443)</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Configure Management tab</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Configuration</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>Monitoring:
+- Enable boot diagnostics: Yes (managed storage account)
+- Enable OS guest diagnostics: No
+
+Auto-shutdown:
+- Enable auto-shutdown: Yes
+- Shutdown time: 7:00:00 PM
+- Time zone: (UTC-08:00) Pacific Time
+- Send notification before auto-shutdown: Yes</code></pre>
+            </div>
+
+            <p class="step-label">Step 6: Review and Create</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Click "Review + create"
+2. Review all settings
+3. Click "Create"
+4. Download private key when prompted (vm-webserver-01_key.pem)
+5. Wait 3-5 minutes for deployment</code></pre>
+            </div>
+
+            <p class="step-label">Step 7: Verify VM is running</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Go to "Virtual machines"
+2. Click "vm-webserver-01"
+3. Verify Status: "Running"
+4. Note Public IP address: e.g., 52.168.45.20</code></pre>
+            </div>
+
+            <h3>Task 5.2: Connect to VM and Configure Web Server</h3>
+            
+            <p class="step-label">Step 1: Set correct permissions on private key (from local terminal)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>chmod 400 ~/Downloads/vm-webserver-01_key.pem</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: SSH into VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>ssh -i ~/Downloads/vm-webserver-01_key.pem azureuser@52.168.45.20</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Update system and install NGINX</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Update package list
+sudo apt update
+
+# Install NGINX
+sudo apt install nginx -y
+
+# Start NGINX
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# Verify NGINX is running
+sudo systemctl status nginx</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create simple web page</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>sudo bash -c 'cat > /var/www/html/index.html << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure VM Lab</title>
+</head>
+<body>
+    <h1>Welcome to VM: vm-webserver-01</h1>
+    <p>This server is running on Azure!</p>
+    <p>Hostname: $(hostname)</p>
+    <p>IP Address: $(hostname -I)</p>
+</body>
+</html>
+EOF'</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Test web server</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># From VM
+curl http://localhost
+
+# From your browser
+# Navigate to: http://52.168.45.20</code></pre>
+            </div>
+
+            <h3>Task 5.3: Create VM with CLI (Database Server)</h3>
+            
+            <p class="step-label">Step 1: Define variables</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>RESOURCE_GROUP="rg-vm-lab"
+LOCATION="eastus"
+VM_NAME="vm-database-01"
+VM_IMAGE="Ubuntu2204"
+VM_SIZE="Standard_E2s_v3"  # 2 vCPU, 16 GB RAM (memory optimized)
+ADMIN_USERNAME="azureuser"
+VNET_NAME="vnet-webapp"
+SUBNET_NAME="subnet-data"
+NSG_NAME="nsg-database"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create subnet for database</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name $VNET_NAME \
+  --name $SUBNET_NAME \
+  --address-prefixes 10.0.2.0/24</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create Network Security Group for database</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network nsg create \
+  --resource-group $RESOURCE_GROUP \
+  --name $NSG_NAME \
+  --location $LOCATION
+
+# Allow SSH only from web subnet
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowSSHFromWeb \
+  --priority 100 \
+  --source-address-prefixes 10.0.1.0/24 \
+  --source-port-ranges '*' \
+  --destination-address-prefixes '*' \
+  --destination-port-ranges 22 \
+  --access Allow \
+  --protocol Tcp
+
+# Allow PostgreSQL from web subnet
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowPostgreSQLFromWeb \
+  --priority 110 \
+  --source-address-prefixes 10.0.1.0/24 \
+  --source-port-ranges '*' \
+  --destination-address-prefixes '*' \
+  --destination-port-ranges 5432 \
+  --access Allow \
+  --protocol Tcp
+
+# Deny all other inbound
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name DenyAllInbound \
+  --priority 200 \
+  --source-address-prefixes '*' \
+  --source-port-ranges '*' \
+  --destination-address-prefixes '*' \
+  --destination-port-ranges '*' \
+  --access Deny \
+  --protocol '*'</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name $VM_NAME \
+  --image $VM_IMAGE \
+  --size $VM_SIZE \
+  --admin-username $ADMIN_USERNAME \
+  --generate-ssh-keys \
+  --vnet-name $VNET_NAME \
+  --subnet $SUBNET_NAME \
+  --nsg $NSG_NAME \
+  --public-ip-address "" \
+  --private-ip-address 10.0.2.10 \
+  --os-disk-name "${VM_NAME}-osdisk" \
+  --os-disk-size-gb 128 \
+  --storage-sku Premium_LRS \
+  --tags Environment=Production Tier=Database</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Add data disk for database storage</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm disk attach \
+  --resource-group $RESOURCE_GROUP \
+  --vm-name $VM_NAME \
+  --name "${VM_NAME}-datadisk-01" \
+  --size-gb 256 \
+  --sku Premium_LRS \
+  --new</code></pre>
+            </div>
+
+            <p class="step-label">Step 6: Verify VM creation</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm show \
+  --resource-group $RESOURCE_GROUP \
+  --name $VM_NAME \
+  --query '{name:name, size:hardwareProfile.vmSize, privateIp:privateIps[0], powerState:powerState}' \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 6: VM Lifecycle -->
+        <section id="lab6" class="section">
+            <h2>Lab 6: VM Lifecycle Operations</h2>
+
+            <div class="scenario">
+                <strong>📖 Scenario:</strong> Web server needs more capacity during peak season
+            </div>
+
+            <h3>Task 6.1: Resize VM</h3>
+            
+            <p class="step-label">Step 1: Stop the VM (deallocate)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>echo "Stopping VM..."
+az vm deallocate \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Check available VM sizes in the region</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm list-sizes \
+  --location $LOCATION \
+  --query "[?contains(name, 'Standard_B')].{Name:name, vCPUs:numberOfCores, RAM_GB:memoryInMb}" \
+  --output table | head -20</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Resize the VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Resize from B2s (2 vCPU, 4GB) to B4ms (4 vCPU, 16GB)
+az vm resize \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01 \
+  --size Standard_B4ms</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Start the VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm start \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Verify new size</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm show \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01 \
+  --query '{name:name, currentSize:hardwareProfile.vmSize, powerState:powerState}' \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 6.2: Create VM Snapshot (Backup before major update)</h3>
+            
+            <p class="step-label">Step 1: Get OS disk ID</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>OS_DISK_ID=$(az vm show \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01 \
+  --query 'storageProfile.osDisk.managedDisk.id' \
+  --output tsv)
+
+echo "OS Disk ID: $OS_DISK_ID"</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create snapshot</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>SNAPSHOT_NAME="vm-webserver-01-snapshot-$(date +%Y%m%d-%H%M%S)"
+
+az snapshot create \
+  --resource-group $RESOURCE_GROUP \
+  --name $SNAPSHOT_NAME \
+  --source $OS_DISK_ID \
+  --tags Environment=Production Purpose=PreDeploymentBackup</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Verify snapshot</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az snapshot show \
+  --resource-group $RESOURCE_GROUP \
+  --name $SNAPSHOT_NAME \
+  --query '{name:name, diskSizeGB:diskSizeGb, creationTime:timeCreated, provisioningState:provisioningState}' \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 6.3: Create Custom Image from VM</h3>
+            
+            <div class="scenario">
+                <strong>📖 Scenario:</strong> Create golden image after configuring web server
+            </div>
+
+            <p class="step-label">Step 1: Prepare VM for imaging (inside VM via SSH)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># SSH into vm-webserver-01
+ssh -i ~/Downloads/vm-webserver-01_key.pem azureuser@52.168.45.20
+
+# Remove machine-specific files
+sudo waagent -deprovision+user -force
+
+# Exit SSH session
+exit</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Deallocate and generalize VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Stop VM
+az vm deallocate \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01
+
+# Mark as generalized
+az vm generalize \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-01</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create image</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>IMAGE_NAME="img-webserver-golden-v1"
+
+az image create \
+  --resource-group $RESOURCE_GROUP \
+  --name $IMAGE_NAME \
+  --source vm-webserver-01 \
+  --hyper-v-generation V2 \
+  --tags Version=1.0 Stack=NGINX BaseOS=Ubuntu22.04</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Deploy new VM from custom image</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-02 \
+  --image $IMAGE_NAME \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-webapp \
+  --subnet subnet-web \
+  --public-ip-address vm-webserver-02-ip \
+  --nsg "" \
+  --tags DeployedFrom=CustomImage Version=1.0</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 7: VM Availability -->
+        <section id="lab7" class="section">
+            <h2>Lab 7: VM Availability and Scaling</h2>
+
+            <h3>Task 7.1: Create Availability Set and Deploy VMs</h3>
+            
+            <p class="step-label">Step 1: Create availability set</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>AVSET_NAME="avset-webapp"
+
+az vm availability-set create \
+  --resource-group $RESOURCE_GROUP \
+  --name $AVSET_NAME \
+  --platform-fault-domain-count 2 \
+  --platform-update-domain-count 5 \
+  --location $LOCATION</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create VMs in availability set</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create 3 VMs in the availability set
+for i in {1..3}; do
+  az vm create \
+    --resource-group $RESOURCE_GROUP \
+    --name "vm-web-avset-0${i}" \
+    --image Ubuntu2204 \
+    --size Standard_B2s \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --vnet-name vnet-webapp \
+    --subnet subnet-web \
+    --availability-set $AVSET_NAME \
+    --public-ip-address "" \
+    --nsg "" \
+    --no-wait
+done
+
+# Wait for all deployments to complete
+az vm wait \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-web-avset-01 \
+  --created
+
+echo "All VMs in availability set created!"</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Verify fault and update domain distribution</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm availability-set show \
+  --resource-group $RESOURCE_GROUP \
+  --name $AVSET_NAME \
+  --query '{name:name, faultDomains:platformFaultDomainCount, updateDomains:platformUpdateDomainCount}' \
+  --output table
+
+# Check which domain each VM is in
+for i in {1..3}; do
+  az vm get-instance-view \
+    --resource-group $RESOURCE_GROUP \
+    --name "vm-web-avset-0${i}" \
+    --query '{VM:name, FaultDomain:platformFaultDomain, UpdateDomain:platformUpdateDomain}' \
+    --output table
+done</code></pre>
+            </div>
+
+            <h3>Task 7.2: Create VMs Across Availability Zones</h3>
+            
+            <p class="step-label">Step 1: Create VMs in different zones</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Zone 1
+az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-web-zone1 \
+  --image Ubuntu2204 \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-webapp \
+  --subnet subnet-web \
+  --zone 1 \
+  --public-ip-address vm-web-zone1-ip \
+  --public-ip-sku Standard \
+  --nsg "" \
+  --no-wait
+
+# Zone 2
+az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-web-zone2 \
+  --image Ubuntu2204 \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-webapp \
+  --subnet subnet-web \
+  --zone 2 \
+  --public-ip-address vm-web-zone2-ip \
+  --public-ip-sku Standard \
+  --nsg "" \
+  --no-wait
+
+# Zone 3
+az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-web-zone3 \
+  --image Ubuntu2204 \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-webapp \
+  --subnet subnet-web \
+  --zone 3 \
+  --public-ip-address vm-web-zone3-ip \
+  --public-ip-sku Standard \
+  --nsg ""</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Verify zone distribution</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm list \
+  --resource-group $RESOURCE_GROUP \
+  --query "[?contains(name, 'zone')].{Name:name, Zone:zones[0], Location:location}" \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 8: VM Monitoring -->
+        <section id="lab8" class="section">
+            <h2>Lab 8: VM Monitoring and Cost Optimization</h2>
+
+            <h3>Task 8.1: Enable Azure Monitor and Configure Alerts</h3>
+            
+            <p class="step-label">Step 1: Enable diagnostic settings on VM</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Get Log Analytics Workspace ID (create one if doesn't exist)
+WORKSPACE_NAME="law-monitoring"
+
+# Create Log Analytics Workspace
+az monitor log-analytics workspace create \
+  --resource-group $RESOURCE_GROUP \
+  --workspace-name $WORKSPACE_NAME \
+  --location $LOCATION
+
+WORKSPACE_ID=$(az monitor log-analytics workspace show \
+  --resource-group $RESOURCE_GROUP \
+  --workspace-name $WORKSPACE_NAME \
+  --query id \
+  --output tsv)</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Install Azure Monitor Agent on VM (via Portal)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Go to VM → vm-webserver-02
+2. Left menu → Settings → Extensions + applications
+3. Click "+ Add"
+4. Search for "Azure Monitor Agent"
+5. Select and click "Next"
+6. Select Log Analytics workspace: law-monitoring
+7. Click "Review + Create" → "Create"</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create CPU alert rule</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>VM_ID=$(az vm show \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-webserver-02 \
+  --query id \
+  --output tsv)
+
+# Create action group (for email notifications)
+az monitor action-group create \
+  --resource-group $RESOURCE_GROUP \
+  --name ag-vm-alerts \
+  --short-name vmAlerts \
+  --email-receiver \
+    name=AdminEmail \
+    email-address=your-email@example.com
+
+# Create CPU alert
+az monitor metrics alert create \
+  --resource-group $RESOURCE_GROUP \
+  --name "High CPU Usage - vm-webserver-02" \
+  --description "Alert when CPU exceeds 80% for 5 minutes" \
+  --scopes $VM_ID \
+  --condition "avg Percentage CPU > 80" \
+  --window-size 5m \
+  --evaluation-frequency 1m \
+  --action ag-vm-alerts \
+  --severity 2</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Test alert by generating CPU load</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># SSH into VM
+ssh -i ~/Downloads/vm-webserver-01_key.pem azureuser@[VM-IP]
+
+# Generate CPU load
+sudo apt install stress -y
+stress --cpu 4 --timeout 600s
+
+# Monitor CPU in another terminal
+top</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: View metrics in portal</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Go to VM → vm-webserver-02
+2. Left menu → Monitoring → Metrics
+3. Select metric: "Percentage CPU"
+4. Add metric: "Network In Total"
+5. Add metric: "Disk Read Bytes"
+6. Set time range: Last 1 hour
+7. Observe spike during stress test</code></pre>
+            </div>
+
+            <h3>Task 8.2: Query VM Logs with Log Analytics</h3>
+            
+            <p class="step-label">Step 1: Navigate to Log Analytics</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → Log Analytics workspaces
+2. Select "law-monitoring"
+3. Left menu → General → Logs</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Run sample queries</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">KQL (Kusto Query Language)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>// Query 1: VMs with high CPU in last hour
+Perf
+| where TimeGenerated > ago(1h)
+| where ObjectName == "Processor" and CounterName == "% Processor Time"
+| where CounterValue > 80
+| summarize avg(CounterValue) by Computer, bin(TimeGenerated, 5m)
+| render timechart
+
+// Query 2: Available memory trending
+Perf
+| where TimeGenerated > ago(24h)
+| where ObjectName == "Memory" and CounterName == "Available MBytes"
+| summarize avg(CounterValue) by Computer, bin(TimeGenerated, 1h)
+| render timechart
+
+// Query 3: Disk space usage
+Perf
+| where ObjectName == "Logical Disk" and CounterName == "% Free Space"
+| where InstanceName == "/"
+| summarize min(CounterValue) by Computer
+| where min_CounterValue < 20
+| project Computer, FreeSpacePercent = min_CounterValue</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create alert from query</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. After running query, click "New alert rule"
+2. Condition:
+   - Measurement: Custom log search
+   - Alert logic: Number of results > 0
+   - Evaluation: Every 5 minutes
+3. Actions: Select ag-vm-alerts
+4. Details:
+   - Alert name: "Low Disk Space"
+   - Severity: Warning
+5. Click "Create alert rule"</code></pre>
+            </div>
+
+            <h3>Task 8.3: Configure Reserved Instances for Cost Optimization</h3>
+            
+            <p class="step-label">Step 1: Analyze VM usage patterns</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Get VM sizes currently in use
+az vm list \
+  --resource-group $RESOURCE_GROUP \
+  --query "[].{Name:name, Size:hardwareProfile.vmSize, Location:location}" \
+  --output table</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Purchase Reserved Instance (via Portal)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → "Reservations"
+2. Click "+ Add"
+3. Product: "Virtual Machine"
+4. Scope: "Shared" (applies across subscription)
+5. Region: "East US"
+6. Instance size flexibility: "Yes"
+7. VM size: "Standard_B2s"
+8. Term: "3 years" (for maximum discount - 72%)
+9. Quantity: 5
+10. Review cost savings: ~$1,050 vs $3,850 (pay-as-you-go)
+11. Click "Buy now"</code></pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Alternative via CLI:</strong>
+                <pre><code># View available reservation offers
+az reservations catalog show \
+  --subscription-id $(az account show --query id -o tsv) \
+  --reserved-resource-type VirtualMachines \
+  --location eastus \
+  --query "[?name.contains(@, 'Standard_B')].[name,terms]" \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 8.4: Configure Spot VMs for Batch Workloads</h3>
+            
+            <p class="step-label">Step 1: Create Spot VM for batch processing</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-batch-spot-01 \
+  --image Ubuntu2204 \
+  --size Standard_D4s_v3 \
+  --priority Spot \
+  --max-price 0.05 \
+  --eviction-policy Deallocate \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-webapp \
+  --subnet subnet-web \
+  --public-ip-address "" \
+  --nsg "" \
+  --tags Workload=BatchProcessing CostOptimized=Spot</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: View Spot pricing history</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → Virtual machines → Create
+2. Select "Run with Azure Spot discount"
+3. Click "View pricing history"
+4. Observe price fluctuations for different VM sizes
+5. Choose size with stable pricing</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 9: VNets -->
+        <section id="lab9" class="section">
+            <h2>Lab 9: Create and Configure VNets with Subnets</h2>
+
+            <h3>Task 9.1: Create Hub-Spoke VNet Architecture</h3>
+            
+            <p class="step-label">Step 1: Create Hub VNet (central network)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>RESOURCE_GROUP="rg-network-lab"
+LOCATION="eastus"
+
+az group create \
+  --name $RESOURCE_GROUP \
+  --location $LOCATION
+
+# Hub VNet
+az network vnet create \
+  --resource-group $RESOURCE_GROUP \
+  --name vnet-hub \
+  --address-prefixes 10.10.0.0/16 \
+  --location $LOCATION</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create subnets in Hub VNet</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Gateway subnet (for VPN/ExpressRoute)
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --name GatewaySubnet \
+  --address-prefixes 10.10.0.0/24
+
+# Azure Firewall subnet
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --name AzureFirewallSubnet \
+  --address-prefixes 10.10.1.0/24
+
+# Management subnet (jump boxes)
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --name subnet-management \
+  --address-prefixes 10.10.2.0/24
+
+# Azure Bastion subnet
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --name AzureBastionSubnet \
+  --address-prefixes 10.10.3.0/26</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create Spoke VNets</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Spoke 1 - Production workloads
+az network vnet create \
+  --resource-group $RESOURCE_GROUP \
+  --name vnet-spoke-prod \
+  --address-prefixes 10.20.0.0/16 \
+  --location $LOCATION
+
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-web \
+  --address-prefixes 10.20.1.0/24
+
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-app \
+  --address-prefixes 10.20.2.0/24
+
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-data \
+  --address-prefixes 10.20.3.0/24
+
+# Spoke 2 - Development workloads
+az network vnet create \
+  --resource-group $RESOURCE_GROUP \
+  --name vnet-spoke-dev \
+  --address-prefixes 10.30.0.0/16 \
+  --location $LOCATION
+
+az network vnet subnet create \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-dev \
+  --name subnet-dev \
+  --address-prefixes 10.30.1.0/24</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create VNet peering (Hub to Spokes)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Hub to Prod Spoke
+az network vnet peering create \
+  --resource-group $RESOURCE_GROUP \
+  --name hub-to-prod \
+  --vnet-name vnet-hub \
+  --remote-vnet vnet-spoke-prod \
+  --allow-vnet-access \
+  --allow-forwarded-traffic \
+  --allow-gateway-transit
+
+# Prod Spoke to Hub
+az network vnet peering create \
+  --resource-group $RESOURCE_GROUP \
+  --name prod-to-hub \
+  --vnet-name vnet-spoke-prod \
+  --remote-vnet vnet-hub \
+  --allow-vnet-access \
+  --allow-forwarded-traffic \
+  --use-remote-gateways false
+
+# Hub to Dev Spoke
+az network vnet peering create \
+  --resource-group $RESOURCE_GROUP \
+  --name hub-to-dev \
+  --vnet-name vnet-hub \
+  --remote-vnet vnet-spoke-dev \
+  --allow-vnet-access \
+  --allow-forwarded-traffic \
+  --allow-gateway-transit
+
+# Dev Spoke to Hub
+az network vnet peering create \
+  --resource-group $RESOURCE_GROUP \
+  --name dev-to-hub \
+  --vnet-name vnet-spoke-dev \
+  --remote-vnet vnet-hub \
+  --allow-vnet-access \
+  --allow-forwarded-traffic \
+  --use-remote-gateways false</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Verify peering status</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network vnet peering list \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --output table
+
+# Check peering state (should be "Connected")
+az network vnet peering show \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-hub \
+  --name hub-to-prod \
+  --query '{Name:name, PeeringState:peeringState, RemoteVNet:remoteVirtualNetwork.id}' \
+  --output table</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 10: NSG & ASG -->
+        <section id="lab10" class="section">
+            <h2>Lab 10: Network Security Groups (NSG) and Application Security Groups (ASG)</h2>
+
+            <h3>Task 10.1: Create ASGs for Application Tiers</h3>
+            
+            <p class="step-label">Step 1: Create Application Security Groups</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Web tier ASG
+az network asg create \
+  --resource-group $RESOURCE_GROUP \
+  --name asg-web \
+  --location $LOCATION
+
+# App tier ASG
+az network asg create \
+  --resource-group $RESOURCE_GROUP \
+  --name asg-app \
+  --location $LOCATION
+
+# Database tier ASG
+az network asg create \
+  --resource-group $RESOURCE_GROUP \
+  --name asg-database \
+  --location $LOCATION
+
+# Management/Jump box ASG
+az network asg create \
+  --resource-group $RESOURCE_GROUP \
+  --name asg-management \
+  --location $LOCATION</code></pre>
+            </div>
+
+            <h3>Task 10.2: Create NSG with ASG-based Rules</h3>
+            
+            <p class="step-label">Step 1: Create NSG for production subnet</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>NSG_NAME="nsg-prod-subnet"
+
+az network nsg create \
+  --resource-group $RESOURCE_GROUP \
+  --name $NSG_NAME \
+  --location $LOCATION</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Get ASG IDs</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>ASG_WEB=$(az network asg show --resource-group $RESOURCE_GROUP --name asg-web --query id -o tsv)
+ASG_APP=$(az network asg show --resource-group $RESOURCE_GROUP --name asg-app --query id -o tsv)
+ASG_DB=$(az network asg show --resource-group $RESOURCE_GROUP --name asg-database --query id -o tsv)
+ASG_MGMT=$(az network asg show --resource-group $RESOURCE_GROUP --name asg-management --query id -o tsv)</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create NSG rules using ASGs</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Rule 1: Allow HTTP/HTTPS from Internet to Web tier
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowInternetToWeb \
+  --priority 100 \
+  --source-address-prefixes Internet \
+  --source-port-ranges '*' \
+  --destination-asgs $ASG_WEB \
+  --destination-port-ranges 80 443 \
+  --access Allow \
+  --protocol Tcp \
+  --description "Allow HTTP/HTTPS from Internet to web servers"
+
+# Rule 2: Allow traffic from Web to App tier
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowWebToApp \
+  --priority 110 \
+  --source-asgs $ASG_WEB \
+  --source-port-ranges '*' \
+  --destination-asgs $ASG_APP \
+  --destination-port-ranges 8080 \
+  --access Allow \
+  --protocol Tcp \
+  --description "Allow web tier to app tier"
+
+# Rule 3: Allow traffic from App to Database tier
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowAppToDatabase \
+  --priority 120 \
+  --source-asgs $ASG_APP \
+  --source-port-ranges '*' \
+  --destination-asgs $ASG_DB \
+  --destination-port-ranges 1433 5432 \
+  --access Allow \
+  --protocol Tcp \
+  --description "Allow app tier to database (SQL/PostgreSQL)"
+
+# Rule 4: Allow SSH from Management to all tiers
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name AllowManagementSSH \
+  --priority 130 \
+  --source-asgs $ASG_MGMT \
+  --source-port-ranges '*' \
+  --destination-asgs $ASG_WEB $ASG_APP $ASG_DB \
+  --destination-port-ranges 22 3389 \
+  --access Allow \
+  --protocol Tcp \
+  --description "Allow SSH/RDP from management servers"
+
+# Rule 5: Deny direct Internet to Database
+az network nsg rule create \
+  --resource-group $RESOURCE_GROUP \
+  --nsg-name $NSG_NAME \
+  --name DenyInternetToDatabase \
+  --priority 200 \
+  --source-address-prefixes Internet \
+  --source-port-ranges '*' \
+  --destination-asgs $ASG_DB \
+  --destination-port-ranges '*' \
+  --access Deny \
+  --protocol '*' \
+  --description "Block all Internet access to database tier"</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Associate NSG with subnets</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Associate with web subnet
+az network vnet subnet update \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-web \
+  --network-security-group $NSG_NAME
+
+# Associate with app subnet
+az network vnet subnet update \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-app \
+  --network-security-group $NSG_NAME
+
+# Associate with data subnet
+az network vnet subnet update \
+  --resource-group $RESOURCE_GROUP \
+  --vnet-name vnet-spoke-prod \
+  --name subnet-data \
+  --network-security-group $NSG_NAME</code></pre>
+            </div>
+
+            <h3>Task 10.3: Deploy VMs and Assign to ASGs</h3>
+            
+            <p class="step-label">Step 1: Create web server VMs</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create 2 web servers
+for i in {1..2}; do
+  az vm create \
+    --resource-group $RESOURCE_GROUP \
+    --name "vm-web-0${i}" \
+    --image Ubuntu2204 \
+    --size Standard_B2s \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --vnet-name vnet-spoke-prod \
+    --subnet subnet-web \
+    --nsg "" \
+    --public-ip-address "" \
+    --no-wait
+done</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Assign web servers to Web ASG</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>for i in {1..2}; do
+  NIC_ID=$(az vm show \
+    --resource-group $RESOURCE_GROUP \
+    --name "vm-web-0${i}" \
+    --query 'networkProfile.networkInterfaces[0].id' \
+    --output tsv)
+  
+  NIC_NAME=$(basename $NIC_ID)
+  
+  az network nic ip-config update \
+    --resource-group $RESOURCE_GROUP \
+    --nic-name $NIC_NAME \
+    --name ipconfig1 \
+    --application-security-groups asg-web
+done</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create app server and assign to App ASG</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-app-01 \
+  --image Ubuntu2204 \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-spoke-prod \
+  --subnet subnet-app \
+  --nsg "" \
+  --public-ip-address ""
+
+NIC_ID=$(az vm show --resource-group $RESOURCE_GROUP --name vm-app-01 --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+NIC_NAME=$(basename $NIC_ID)
+
+az network nic ip-config update \
+  --resource-group $RESOURCE_GROUP \
+  --nic-name $NIC_NAME \
+  --name ipconfig1 \
+  --application-security-groups asg-app</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create database server and assign to Database ASG</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-db-01 \
+  --image Ubuntu2204 \
+  --size Standard_E2s_v3 \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-spoke-prod \
+  --subnet subnet-data \
+  --nsg "" \
+  --public-ip-address ""
+
+NIC_ID=$(az vm show --resource-group $RESOURCE_GROUP --name vm-db-01 --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+NIC_NAME=$(basename $NIC_ID)
+
+az network nic ip-config update \
+  --resource-group $RESOURCE_GROUP \
+  --nic-name $NIC_NAME \
+  --name ipconfig1 \
+  --application-security-groups asg-database</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Test connectivity</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Create management/jump box in hub VNet
+az vm create \
+  --resource-group $RESOURCE_GROUP \
+  --name vm-jumpbox \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --vnet-name vnet-hub \
+  --subnet subnet-management \
+  --public-ip-address vm-jumpbox-ip \
+  --nsg ""
+
+# Assign to Management ASG
+NIC_ID=$(az vm show --resource-group $RESOURCE_GROUP --name vm-jumpbox --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+NIC_NAME=$(basename $NIC_ID)
+
+az network nic ip-config update \
+  --resource-group $RESOURCE_GROUP \
+  --nic-name $NIC_NAME \
+  --name ipconfig1 \
+  --application-security-groups asg-management
+
+# Get private IPs
+echo "Web Server 1:"
+az vm list-ip-addresses --resource-group $RESOURCE_GROUP --name vm-web-01 --query '[0].virtualMachine.network.privateIpAddresses[0]' -o tsv
+
+echo "App Server:"
+az vm list-ip-addresses --resource-group $RESOURCE_GROUP --name vm-app-01 --query '[0].virtualMachine.network.privateIpAddresses[0]' -o tsv
+
+echo "Database Server:"
+az vm list-ip-addresses --resource-group $RESOURCE_GROUP --name vm-db-01 --query '[0].virtualMachine.network.privateIpAddresses[0]' -o tsv
+
+echo "Jump Box Public IP:"
+az vm list-ip-addresses --resource-group $RESOURCE_GROUP --name vm-jumpbox --query '[0].virtualMachine.network.publicIpAddresses[0].ipAddress' -o tsv</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 11: VPN Gateway -->
+        <section id="lab11" class="section">
+            <h2>Lab 11: Hybrid Connectivity - VPN Gateway</h2>
+
+            <h3>Task 11.1: Create Site-to-Site VPN</h3>
+            
+            <p class="step-label">Step 1: Create public IP for VPN Gateway</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network public-ip create \
+  --resource-group $RESOURCE_GROUP \
+  --name pip-vpngw \
+  --location $LOCATION \
+  --allocation-method Static \
+  --sku Standard</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Create VPN Gateway (takes 30-45 minutes)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network vnet-gateway create \
+  --resource-group $RESOURCE_GROUP \
+  --name vpngw-hub \
+  --location $LOCATION \
+  --vnet vnet-hub \
+  --public-ip-addresses pip-vpngw \
+  --gateway-type Vpn \
+  --vpn-type RouteBased \
+  --sku VpnGw1 \
+  --no-wait
+
+# Check creation status
+az network vnet-gateway show \
+  --resource-group $RESOURCE_GROUP \
+  --name vpngw-hub \
+  --query 'provisioningState' \
+  --output tsv</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Create Local Network Gateway (represents on-premises network)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># This represents your on-premises datacenter
+az network local-gateway create \
+  --resource-group $RESOURCE_GROUP \
+  --name lng-onpremises \
+  --location $LOCATION \
+  --gateway-ip-address 203.0.113.10 \
+  --local-address-prefixes 192.168.0.0/16 172.16.0.0/16</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Create VPN connection</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Generate shared key (in production, use strong key)
+SHARED_KEY="YourSuperSecretSharedKey123!"
+
+az network vpn-connection create \
+  --resource-group $RESOURCE_GROUP \
+  --name conn-hub-to-onprem \
+  --location $LOCATION \
+  --vnet-gateway1 vpngw-hub \
+  --local-gateway2 lng-onpremises \
+  --shared-key $SHARED_KEY \
+  --connection-protocol IKEv2</code></pre>
+            </div>
+
+            <p class="step-label">Step 5: Verify VPN connection status</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network vpn-connection show \
+  --resource-group $RESOURCE_GROUP \
+  --name conn-hub-to-onprem \
+  --query '{Name:name, ConnectionStatus:connectionStatus, EgressBytesTransferred:egressBytesTransferred, IngressBytesTransferred:ingressBytesTransferred}' \
+  --output table</code></pre>
+            </div>
+
+            <h3>Task 11.2: Configure Point-to-Site VPN (for remote workers)</h3>
+            
+            <p class="step-label">Step 1: Generate certificates (on local machine)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Generate root certificate
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout vpnRootCert.key \
+  -out vpnRootCert.crt \
+  -subj "/CN=VPN Root Certificate"
+
+# Convert to base64 for Azure
+cat vpnRootCert.crt | base64 > vpnRootCert.b64
+ROOT_CERT_DATA=$(cat vpnRootCert.b64 | tr -d '\n')</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Configure Point-to-Site on VPN Gateway (via Portal - easier)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → Virtual network gateways → vpngw-hub
+2. Left menu → Point-to-site configuration
+3. Click "Configure now"
+4. Address pool: 172.16.0.0/24
+5. Tunnel type: IKEv2 and OpenVPN (SSL)
+6. Authentication type: Azure certificate
+7. Root certificates:
+   - Name: VPNRootCert
+   - Public certificate data: [paste from vpnRootCert.b64]
+8. Click "Save" (takes 5-10 minutes)</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Download VPN client</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. After configuration completes
+2. Click "Download VPN client"
+3. Extract ZIP file
+4. Run VpnClientSetup executable
+5. Connect using generated profile</code></pre>
+            </div>
+        </section>
+
+        <!-- Lab 12: Troubleshooting -->
+        <section id="lab12" class="section">
+            <h2>Lab 12: Test and Troubleshoot Network Connectivity</h2>
+
+            <h3>Task 12.1: Test Network Connectivity</h3>
+            
+            <p class="step-label">Step 1: Install network tools on VMs</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># SSH to jump box
+JUMPBOX_IP=$(az vm list-ip-addresses --resource-group $RESOURCE_GROUP --name vm-jumpbox --query '[0].virtualMachine.network.publicIpAddresses[0].ipAddress' -o tsv)
+ssh azureuser@$JUMPBOX_IP
+
+# Install tools
+sudo apt update
+sudo apt install -y curl telnet netcat-traditional traceroute mtr</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Test connectivity from jump box</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Get private IPs
+WEB_IP="10.20.1.4"    # Replace with actual
+APP_IP="10.20.2.4"    # Replace with actual
+DB_IP="10.20.3.4"     # Replace with actual
+
+# Test SSH connectivity (should work - allowed by NSG)
+nc -zv $WEB_IP 22
+nc -zv $APP_IP 22
+nc -zv $DB_IP 22
+
+# Test web server HTTP (should fail - not allowed from management)
+nc -zv $WEB_IP 80
+
+# Traceroute to see path
+traceroute $DB_IP</code></pre>
+            </div>
+
+            <h3>Task 12.2: Use Azure Network Watcher</h3>
+            
+            <p class="step-label">Step 1: Enable Network Watcher (if not already enabled)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network watcher configure \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --enabled true</code></pre>
+            </div>
+
+            <p class="step-label">Step 2: Test IP Flow Verify (check if traffic is allowed)</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Bash</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Get VM ID
+VM_WEB_ID=$(az vm show --resource-group $RESOURCE_GROUP --name vm-web-01 --query id -o tsv)
+NIC_ID=$(az vm show --resource-group $RESOURCE_GROUP --name vm-web-01 --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+
+# Test inbound HTTPS from Internet (should be allowed)
+az network watcher test-ip-flow \
+  --resource-group NetworkWatcherRG \
+  --location $LOCATION \
+  --vm $VM_WEB_ID \
+  --direction Inbound \
+  --protocol TCP \
+  --local 10.20.1.4:443 \
+  --remote 1.2.3.4:12345
+
+# Test inbound SSH from Internet (should be denied)
+az network watcher test-ip-flow \
+  --resource-group NetworkWatcherRG \
+  --location $LOCATION \
+  --vm $VM_WEB_ID \
+  --direction Inbound \
+  --protocol TCP \
+  --local 10.20.1.4:22 \
+  --remote 1.2.3.4:54321</code></pre>
+            </div>
+
+            <p class="step-label">Step 3: Next Hop Analysis</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>az network watcher show-next-hop \
+  --resource-group $RESOURCE_GROUP \
+  --vm vm-web-01 \
+  --source-ip 10.20.1.4 \
+  --dest-ip 10.20.2.4 \
+  --nic $NIC_ID</code></pre>
+            </div>
+
+            <p class="step-label">Step 4: Connection Troubleshoot</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Troubleshoot connectivity from web to database
+az network watcher test-connectivity \
+  --resource-group $RESOURCE_GROUP \
+  --source-resource vm-web-01 \
+  --dest-resource vm-db-01 \
+  --protocol Tcp \
+  --dest-port 5432</code></pre>
+            </div>
+        </section>
+
+        <!-- Cleanup Section -->
+        <section class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white; border-bottom-color: white;">🧹 Cleanup - Delete All Resources</h2>
+            
+            <div class="alert alert-danger" style="background-color: rgba(255,255,255,0.2); border-left-color: #ff6b6b; color: white;">
+                <strong>⚠️ IMPORTANT: Cost Management</strong>
+                <p>Don't forget to delete all resource groups after completing the labs to avoid unexpected charges!</p>
+            </div>
+
+            <p class="step-label" style="color: white;">Delete all resource groups:</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Azure CLI</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code># Delete Storage Lab resources
+az group delete --name rg-storage-lab --yes --no-wait
+
+# Delete VM Lab resources
+az group delete --name rg-vm-lab --yes --no-wait
+
+# Delete Network Lab resources
+az group delete --name rg-network-lab --yes --no-wait
+
+# Verify deletion status
+az group list --query "[?name=='rg-storage-lab' || name=='rg-vm-lab' || name=='rg-network-lab'].{Name:name, State:properties.provisioningState}" --output table</code></pre>
+            </div>
+
+            <p class="step-label" style="color: white;">Alternative: Delete specific resource groups via Portal:</p>
+            <div class="code-block-container">
+                <div class="code-block-header">
+                    <span class="language">Instructions</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <span>📋 Copy</span>
+                    </button>
+                </div>
+                <pre><code>1. Portal → Resource groups
+2. Select resource group (rg-storage-lab, rg-vm-lab, or rg-network-lab)
+3. Click "Delete resource group"
+4. Type resource group name to confirm
+5. Click "Delete"
+6. Repeat for all lab resource groups</code></pre>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Azure Training Labs. All rights reserved.</p>
+        <p>Updated for Azure CLI 2.81.0 | December 2025</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            📚 Documentation: <a href="https://docs.microsoft.com/azure" target="_blank" style="color: #64b5f6;">Azure Docs</a> | 
+            🛠️ Azure CLI Reference: <a href="https://docs.microsoft.com/cli/azure" target="_blank" style="color: #64b5f6;">CLI Docs</a>
+        </p>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" onclick="scrollToTop()" id="scrollTopBtn">
+        ↑
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block-container').querySelector('pre code');
+            const text = codeBlock.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span>✓ Copied!</span>';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy code. Please try selecting and copying manually.');
+            });
+        }
+
+        // Scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', () => {
+            const scrollBtn = document.getElementById('scrollTopBtn');
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add keyboard shortcut for copying (Ctrl+C on code blocks)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                const selection = window.getSelection().toString();
+                if (selection) {
+                    // Let default copy behavior work
+                    return;
+                }
+                
+                // If no selection, find focused code block
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.closest('.code-block-container')) {
+                    const copyBtn = activeElement.closest('.code-block-container').querySelector('.copy-btn');
+                    if (copyBtn) {
+                        copyBtn.click();
+                        e.preventDefault();
+                    }
+                }
+            }
+        });
+
+        // Print functionality
+        function printPage() {
+            window.print();
+        }
+
+        // Add print button to header (optional)
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Azure Labs Guide loaded successfully!');
+            console.log('Total labs: 12');
+            console.log('Total code blocks: ' + document.querySelectorAll('.code-block-container').length);
+        });
+    </script>
+</body>
+</html>
